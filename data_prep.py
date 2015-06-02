@@ -32,4 +32,4 @@ def loaddata(sourceF, targetF, outFile):
 
 if __name__ == "__main__":
     loaddata("data/train.es", "data/train.en", "data/train")
-    call(["./fast_align/fast_align", "-i", "data/train"])
+    call(["./fast_align-master/fast_align-master", "-i", "data/train"])
