@@ -6,6 +6,7 @@ from nltk import tokenize
 from collections import deque
 from sklearn.linear_model import Perceptron
 from scipy.sparse import csr_matrix
+from multiprocessing import Pool
 
 # feature templates as defined in Tromble
 templateFts = ['tlm1','wl','tl','tlp1','tb','trm1','wr','tr','trp1']
@@ -29,24 +30,52 @@ templates = [[1,2,6,7],
              [0,2,5,7],
              [2,5,7]]
 
+feats = []
+
 # main procedure
-def train(sourceF, aligns):
+def main(sourceF, aligns):
     toker = tokenize.RegexpTokenizer('\w+|\S+')
+    global feats
     feats = setFeatures(sourceF)
     print 'nr.of feats: ', len(feats)
     trainVecs = []
+    srcSs = []
+    refs = []
     with open(sourceF) as srcF, open(aligns) as srcRef:
         for src, refAlign in izip(srcF, srcRef):
             src = toker.tokenize(src)
-            srcP = permute(src)  # according to ITG neigbor
-            refOrder = getReference(src, refAlign) 
-            trainVecs.extend(getFeats(srcP,refOrder,feats))
-
+            srcSs.append(src)
+            refs.append(refAlign)
+    split = len(srcSs)/4
+    print 'start pool'
+    p = Pool(processes=4)
+    vecs = p.map(getFeatsMP,[(srcSs[:split],refs[:split]),(srcSs[split:2*split],refs[split:2*split]),
+                             (srcSs[2*split:3*split],refs[2*split:3*split]),(srcSs[3*split:],refs[3*split:])])
+    for v in vecs:
+        trainVecs.extend(v)
+    #print trainVecs
+    print 'start training'
     X,y = getTrainVecs(trainVecs,feats)
     perceptron = Perceptron(penalty=None, alpha=0.0001, fit_intercept=True, n_iter=1, shuffle=True, verbose=0, eta0=1.0,
                             n_jobs=1, random_state=0, class_weight=None, warm_start=False)
-    perceptron.fit(X,y)
 
+    split = int(len(y)*.8)
+    perceptron.fit(X[:split],y[:split])
+    py = perceptron.predict(X[split:])
+    correct = 0
+    for i in range(len(py)):
+        if y[split:] is py[i]:
+            correct +=1
+    print (float)(correct)/len(py)
+
+def getFeatsMP((srcS,refs)):
+    vecs = [] 
+    for src,refAlign in izip(srcS,refs):
+        srcP = permute(src)  # according to ITG neigbor
+        refOrder = getReference(src, refAlign)
+        vecs.extend(getFeats(srcP,refOrder,feats))
+    #print 'vecs', vecs
+    return vecs    
 def getTrainVecs(samples, feats):
     X = []
     y = []
@@ -173,5 +202,5 @@ def getFeat(w,l,r,t):
     return feat[:-1]
             
 if __name__ == "__main__":
-    train("data/training.tagged.en.test", "data/training.gdfa.test")
+    main("data/training.tagged.en.test", "data/training.gdfa.test")
 
