@@ -5,49 +5,55 @@ from operator import itemgetter
 from nltk import tokenize
 from collections import deque
 
-"""
-def train(sourceF,aligns):
+# feature templates as defined in Tromble
+templateFts = ['tlm1','wl','tl','tlp1','tb','trm1','wr','tr','trp1']
+templates = [[1,2,6,7],
+             [1,2,6],
+             [1,6,7],
+             [1,2,7],
+             [2,6,7],
+             [1,6],
+             [2,7],
+             [1,2],
+             [6,7],
+             [1],[2],[6],[7],
+             [2,4,7],
+             [2,3,5,7],
+             [2,3,7],
+             [2,3,7,8],
+             [2,7,8],
+             [0,2,7,8],
+             [0,2,7],
+             [0,2,5,7],
+             [2,5,7]]
+
+# main procedure
+def train(sourceF, aligns):
     toker = tokenize.RegexpTokenizer('\w+|\S+')
+    feats = setFeatures(sourceF)
+    trainVecs = []
     with open(sourceF) as srcF, open(aligns) as srcRef:
-        for g,gAl in izip(srcF, srcRef):
-            gToks = toker.tokenize(g.decode('utf8'))
-            gP = permute(gToks) # according to ITG neigbor
-            gRef = getReference(gToks,gAl)
-"""
-
-
-def train(toksF, aligns):
-    toker = tokenize.RegexpTokenizer('\w+|\S+')
-    i = 0
-    with open(toksF) as srcF, open(aligns) as srcRef:
-        for toks, refAlign in izip(srcF, srcRef):
-            src, tar = getSents(toker.tokenize(toks))
+        for src, refAlign in izip(srcF, srcRef):
+            src = toker.tokenize(src)
             srcP = permute(src)  # according to ITG neigbor
-            refOrder = getReference(src, refAlign)
-            i += 1
-            if i > 5:
-                quit()
+            refOrder = getReference(src, refAlign) 
+            trainVecs.extend(getTrainVecs(srcP,refOrder,feats))
+            
+    print trainVecs
 
-
-def getSents(toks):
-    i = toks.index('|||')
-    return toks[:i], toks[i + 1:]
-
-
+# random reordering, must be replaced by ITG neigbor
 def permute(srcS):
     shuffled = np.arange(len(srcS))
     shuffle(shuffled)
     return [srcS[i] for i in shuffled]
 
-
+# sets source tokens in target order
 def getReference(src, alignsS):
     ltoker = tokenize.RegexpTokenizer('\d+-\d+')
     ptoker = tokenize.RegexpTokenizer('\d+')
     srcPos = []
     aligns = deque([ptoker.tokenize(al) for al in ltoker.tokenize(alignsS)])
 
-    print "-----"
-    print aligns
     try:
         while True:
             al = aligns.popleft()
@@ -59,25 +65,93 @@ def getReference(src, alignsS):
                 srcPos.append((s, 0))
 
     srcPos.sort(key=itemgetter(1))
+    return [p[0] for p in srcPos]
 
-    print src
-    # print srcPos
-    # print 'src len:', len(src)
-    refOrder = [p[0] for p in srcPos]
+# gets for every wordpair the features as defined by the templates
+# then checks if they are actually features, if so, feature index is added to vec and label is added
+# return all vecs for a sentence
+def getTrainVecs(srcP,refOrder,features):
+    vecs = []
+    for l in range(len(srcP)):
+        for i in range(len(srcP)-(l+1)):
+            r = l+i+1
+            feats = []
+            vec = []
+            for t in templates:
+                feat = getFeat(srcP,l,r,[templateFts[n] for n in t])
+                feats.append(feat)
+                d = r-l
+                if d > 10:
+                    d = 11
+                elif d > 5:
+                    d = 6
+                feat+='_'+str(d)
+                feats.append(feat)
+                
+            for f in feats:
+                try:
+                    i = features.index(f)
+                    vec.append(i)
+                except ValueError:
+                    pass
+            # add label
+            if refOrder.index(srcP[l]) < refOrder.index(srcP[r]):
+                vec.append(1)
+            elif refOrder.index(srcP[l]) > refOrder.index(srcP[r]):
+                vec.append(0)
+            vecs.append(vec)
+    return vecs
 
-    print refOrder
-    return refOrder
+def setFeatures(sourceF):
+    toker = tokenize.RegexpTokenizer('\w+|\S+')
+    feats = []
+    with open(sourceF) as srcF:
+        for src in srcF:
+            srcS = toker.tokenize(src)
+            for l in range(len(srcS)):
+                for i in range(len(srcS)-(l+1)):
+                    r = l+i+1
+                    for t in templates:
+                        feat = getFeat(srcS,l,r,[templateFts[n] for n in t])
+                        feats.append(feat)
+                        d = r-l
+                        if d > 10:
+                            d = 11
+                        elif d > 5:
+                            d = 6
+                        feat+='_'+str(d)
+                        feats.append(feat)
 
+    return list(set(feats))
 
-if __name__ == "__main__":
-    train("data/train.tok.en-de", "data/training.gdfa")
-
-"""
-def train():
-    i = 0
-    for gW1 in gP:
-        i += 1
-        for gW2 in gP[i:]:
-            score[gP] += B(gW1,gW2)
+def getFeat(w,l,r,t):
+    feat = ''
+    for f in t:
+        try:
+            if f is 'tlm1' and l>0:
+                feat+=w[l-1].split('_')[1]+'_'
+            if f is 'wl':
+                feat+=w[l].split('_')[0]+'_'
+            if f is 'tl':
+                feat+=w[l].split('_')[1]+'_'
+            if f is 'tlp1':
+                feat+=w[l+1].split('_')[1]+'_'
+            if f is 'tb':
+                for i in range(len(w)):
+                    if i > l and i < r:
+                        feat+=w[i].split('_')[1]+'_'
+            if f is 'trm1':
+                feat+=w[r-1].split('_')[1]+'_'
+            if f is 'wr':
+                feat+=w[r].split('_')[0]+'_'
+            if f is 'tr':
+                feat+=w[r].split('_')[1]+'_'
+            if f is 'trp1' and r<len(w)-2:
+                feat+=w[r+1].split('_')[1]+'_'
+        except IndexError:
+            pass
+    return feat[:-1]
             
-"""
+if __name__ == "__main__":
+    train("data/training.tagged.en.test", "data/training.gdfa.test")
+
