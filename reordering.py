@@ -4,6 +4,8 @@ from itertools import izip
 from operator import itemgetter
 from nltk import tokenize
 from collections import deque
+from sklearn.linear_model import Perceptron
+from scipy.sparse import csr_matrix
 
 # feature templates as defined in Tromble
 templateFts = ['tlm1','wl','tl','tlp1','tb','trm1','wr','tr','trp1']
@@ -31,16 +33,33 @@ templates = [[1,2,6,7],
 def train(sourceF, aligns):
     toker = tokenize.RegexpTokenizer('\w+|\S+')
     feats = setFeatures(sourceF)
+    print 'nr.of feats: ', len(feats)
     trainVecs = []
     with open(sourceF) as srcF, open(aligns) as srcRef:
         for src, refAlign in izip(srcF, srcRef):
             src = toker.tokenize(src)
             srcP = permute(src)  # according to ITG neigbor
             refOrder = getReference(src, refAlign) 
-            trainVecs.extend(getTrainVecs(srcP,refOrder,feats))
-            
-    print trainVecs
+            trainVecs.extend(getFeats(srcP,refOrder,feats))
 
+    X,y = getTrainVecs(trainVecs,feats)
+    perceptron = Perceptron(penalty=None, alpha=0.0001, fit_intercept=True, n_iter=1, shuffle=True, verbose=0, eta0=1.0,
+                            n_jobs=1, random_state=0, class_weight=None, warm_start=False)
+    perceptron.fit(X,y)
+
+def getTrainVecs(samples, feats):
+    X = []
+    y = []
+    for trS in samples:
+        if len(trS) > 3:
+            x = [0 for i in range(len(feats))]
+            for f in trS[:-1]:
+                x[f] = 1
+            X.append(x)
+            y.append(trS[-1])
+            
+    return csr_matrix(X), np.array(y)
+    
 # random reordering, must be replaced by ITG neigbor
 def permute(srcS):
     shuffled = np.arange(len(srcS))
@@ -70,7 +89,7 @@ def getReference(src, alignsS):
 # gets for every wordpair the features as defined by the templates
 # then checks if they are actually features, if so, feature index is added to vec and label is added
 # return all vecs for a sentence
-def getTrainVecs(srcP,refOrder,features):
+def getFeats(srcP,refOrder,features):
     vecs = []
     for l in range(len(srcP)):
         for i in range(len(srcP)-(l+1)):
@@ -97,7 +116,8 @@ def getTrainVecs(srcP,refOrder,features):
             # add label
             if refOrder.index(srcP[l]) < refOrder.index(srcP[r]):
                 vec.append(1)
-            elif refOrder.index(srcP[l]) > refOrder.index(srcP[r]):
+            #elif refOrder.index(srcP[l]) > refOrder.index(srcP[r]):
+            else:
                 vec.append(0)
             vecs.append(vec)
     return vecs
