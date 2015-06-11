@@ -7,6 +7,17 @@ SYM_ALIGN="./cdec/build/utils/atools"
 EXTRACTOR="./cdec/build/extractor"
 COMPOUND_SPLIT="./cdec/build/compound-split"
 
+
+if [ "$1" == "simple" ]
+then
+    N=$2
+    DATA_FOLDER="data/simple"
+    rm -rf ${DATA_FOLDER} 2> /dev/null
+    mkdir ${DATA_FOLDER}
+    head -n ${N} data/train.en > ${DATA_FOLDER}/train.en
+    head -n ${N} data/train.de > ${DATA_FOLDER}/train.de
+fi
+
 # make sure every line ends with a '.' (needed for stanford POS tagger)
 echo "================================================"
 echo "    Compound splitting and merge data corpus    "
@@ -55,6 +66,7 @@ ${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/grammars -t
 
 rm -f ${DATA_FOLDER}/itg.en.dirty 2> /dev/null
 echo "[S] ||| [X] ||| 1.0" >> ${DATA_FOLDER}/itg.en
+echo "[X] ||| [X] ||| 0.5" >> ${DATA_FOLDER}/itg.en
 tLen=$(ls -1 ${DATA_FOLDER}/grammars/grammar.* | wc -l)
 for (( i=0; i<${tLen}; i++ ));
 do
@@ -65,10 +77,15 @@ do
 done
 
 cat ${DATA_FOLDER}/itg.en.dirty | awk '!a[$0]++' >> ${DATA_FOLDER}/itg.en && rm -f ${DATA_FOLDER}/itg.en.dirty
-cat data/training.en | python pcfg-sampling/itg-parse.py data/itg.en > itg.forest.en
 
 #get english sents only
-cat ${DATA_FOLDER}/training.en-de | sed 's/|||.*//g' > ${DATA_FOLDER}/training.en
+cat ${DATA_FOLDER}/training.en-de | sed 's/ |||.*//g' > ${DATA_FOLDER}/training.en
+
+# get ITG FOREST
+echo "======================"
+echo "    Get ITG forest    "
+echo "======================"
+python pcfg-sampling/itg-parse.py ${DATA_FOLDER}/itg.en ${DATA_FOLDER}/training.en > ${DATA_FOLDER}/itg.forest.en
 
 #download and unzip stanford basic POS tagger
 cd stanford-postagger-2015-04-20/
