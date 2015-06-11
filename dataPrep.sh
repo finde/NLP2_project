@@ -1,25 +1,64 @@
 #!/bin/bash
 
+DATA_FOLDER="data"
+CDEC_CORPUS_TOOLS="./cdec/corpus"
+FAST_ALIGN="./fast_align-master/fast_align" # or FAST_ALIGN="./cdec/fast_align"
+SYM_ALIGN="./cdec/build/utils/atools"
+EXTRACTOR="./cdec/build/extractor"
+COMPOUND_SPLIT="./cdec/build/compound-split"
+
 # make sure every line ends with a '.' (needed for stanford POS tagger)
-cat data/train.en | sed 's/$/\. /g' | sed 's/\. \./\./g' > data/train.en
-cat data/train.de | sed 's/$/\. /g' | sed 's/\. \./\./g' > data/train.de
+echo "================================================"
+echo "    Compound splitting and merge data corpus    "
+echo "================================================"
+cat ${DATA_FOLDER}/train.en | sed 's/[^(?|!|.)]$/&./' > ${DATA_FOLDER}/train.clean.en
+cat ${DATA_FOLDER}/train.de | sed 's/[^(?|!|.)]$/&./' | ${COMPOUND_SPLIT}/compound-split.pl --output 1best > ${DATA_FOLDER}/train.clean.de
 
-paste -d '|' data/train.en data/train.de > tmp
-cat tmp | sed 's/\|/ ||| /g' > data/train.en-de
+paste -d '|' ${DATA_FOLDER}/train.en ${DATA_FOLDER}/train.clean.de > tmp
+cat tmp | sed 's/\|/ ||| /g' > ${DATA_FOLDER}/train.en-de
 
-./cdec-2014-10-12/corpus/tokenize-anything.sh < data/train.en-de | ./cdec-2014-10-12/corpus/lowercase.pl > data/train.tok.en-de
-./cdec-2014-10-12/corpus/filter-length.pl -40 data/train.tok.en-de > data/training.en-de
+echo "================================================"
+echo "    Tokenize and lowercase the training data    "
+echo "================================================"
+${CDEC_CORPUS_TOOLS}/tokenize-anything.sh < ${DATA_FOLDER}/train.en-de | ${CDEC_CORPUS_TOOLS}/lowercase.pl > ${DATA_FOLDER}/train.tok.en-de
+echo "done"
 
-./fast_align-master/fast_align -i data/training.en-de -d -v -o > data/training.en-de.fwd_align
-./fast_align-master/fast_align -i data/training.en-de -d -v -o -r > data/training.en-de.rev_align
+echo "==============================================="
+echo "    Filter training corpus sentence lengths    "
+echo "==============================================="
+${CDEC_CORPUS_TOOLS}/filter-length.pl -40 ${DATA_FOLDER}/train.tok.en-de > ${DATA_FOLDER}/training.en-de
+echo "done"
 
-./cdec-2014-10-12/utils/atools -i data/training.en-de.fwd_align -j data/training.en-de.rev_align -c grow-diag-final-and > data/training.gdfa
+echo "=============================================="
+echo "    Run word bidirectional word alignments    "
+echo "=============================================="
+${FAST_ALIGN} -i ${DATA_FOLDER}/training.en-de -d -v -o > ${DATA_FOLDER}/training.en-de.fwd_align
+${FAST_ALIGN} -i ${DATA_FOLDER}/training.en-de -d -v -o -r > ${DATA_FOLDER}/training.en-de.rev_align
+echo "done"
 
-#get english sents only 
-cat data/training.en-de | sed 's/|||.*//g' > data/training.en
+echo "=================================="
+echo "    Symmetrize word alignments    "
+echo "=================================="
+${SYM_ALIGN} -i ${DATA_FOLDER}/training.en-de.fwd_align -j ${DATA_FOLDER}/training.en-de.rev_align -c grow-diag-final-and > ${DATA_FOLDER}/training.gdfa
+echo "done"
 
-#dowload and unzip stanford basic POS tagger
+echo "================================="
+echo "    Compile the training data    "
+echo "================================="
+${EXTRACTOR}/sacompile -b ${DATA_FOLDER}/training.en-de -a ${DATA_FOLDER}/training.gdfa -c ${DATA_FOLDER}/extract.ini -o ${DATA_FOLDER}/training.sa
+echo "done"
+
+echo "========================"
+echo "    Extract grammars    "
+echo "========================"
+${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/dev.grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/train.en-de.sgm
+echo "done"
+
+#get english sents only
+cat ${DATA_FOLDER}/training.en-de | sed 's/|||.*//g' > ${DATA_FOLDER}/training.en
+
+#download and unzip stanford basic POS tagger
 cd stanford-postagger-2015-04-20/
-java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../data/training.en > ../data/training.tagged.en
+java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../${DATA_FOLDER}/training.en > ../${DATA_FOLDER}/training.tagged.en
 
 # get ITG with cdec and forests with Wilker's tool
