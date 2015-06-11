@@ -52,7 +52,20 @@ echo "========================"
 echo "    Extract grammars    "
 echo "========================"
 ${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en-de.sgm
-echo "done"
+
+rm -f ${DATA_FOLDER}/itg.en.dirty 2> /dev/null
+echo "[S] ||| [X] ||| 1.0" >> ${DATA_FOLDER}/itg.en
+tLen=$(ls -1 ${DATA_FOLDER}/grammars/grammar.* | wc -l)
+for (( i=0; i<${tLen}; i++ ));
+do
+    f=${DATA_FOLDER}/grammars/grammar.${i}
+    echo "Processing $f"
+    # take action on each file. $f store current file name
+    cat ${f} | awk '{split($0,a," [|][|][|] "); print a[1],"|||",a[2],"||| 0.1"}' | sed -e 's/\[X,1\]/\[X\]/g' | sed -e 's/\[X,2\]/\[X\]/g' | awk '!a[$0]++' >> ${DATA_FOLDER}/itg.en.dirty
+done
+
+cat ${DATA_FOLDER}/itg.en.dirty | awk '!a[$0]++' >> ${DATA_FOLDER}/itg.en && rm -f ${DATA_FOLDER}/itg.en.dirty
+cat data/training.en | python pcfg-sampling/itg-parse.py data/itg.en > itg.forest.en
 
 #get english sents only
 cat ${DATA_FOLDER}/training.en-de | sed 's/|||.*//g' > ${DATA_FOLDER}/training.en
