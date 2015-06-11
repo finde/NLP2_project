@@ -51,7 +51,7 @@ echo "done"
 echo "========================"
 echo "    Extract grammars    "
 echo "========================"
-${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/dev.grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en-de.sgm
+${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en-de.sgm
 echo "done"
 
 #get english sents only
@@ -61,4 +61,4 @@ cat ${DATA_FOLDER}/training.en-de | sed 's/|||.*//g' > ${DATA_FOLDER}/training.e
 cd stanford-postagger-2015-04-20/
 java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../${DATA_FOLDER}/training.en > ../${DATA_FOLDER}/training.tagged.en
 
-# get ITG with cdec and forests with Wilker's tool
+
