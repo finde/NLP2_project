@@ -51,7 +51,7 @@ echo "done"
 echo "========================"
 echo "    Extract grammars    "
 echo "========================"
-${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/dev.grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/train.en-de.sgm
+${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/dev.grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en-de.sgm
 echo "done"
 
 #get english sents only
