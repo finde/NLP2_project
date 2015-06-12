@@ -7,6 +7,7 @@ from collections import deque
 from sklearn.linear_model import Perceptron
 from scipy.sparse import csr_matrix
 from multiprocessing import Pool
+from random import randint
 
 # feature templates as defined in Tromble
 templateFts = ['tlm1','wl','tl','tlp1','tb','trm1','wr','tr','trp1']
@@ -51,13 +52,13 @@ def main(sourceF, aligns):
             refs.append(refAlign)
 
     
-    split = len(srcSs)/4
+    split = len(srcSs)/5
     print 'start building train vectors'
     p = Pool(4)
     vecs = p.map(getFeatsMP,[(srcSs[:split],refs[:split]),
                              (srcSs[split:2*split],refs[split:2*split]),
                              (srcSs[2*split:3*split],refs[2*split:3*split]),
-                             (srcSs[3*split:],refs[3*split:])])
+                             (srcSs[3*split:4*split],refs[3*split:4*split])])
     
     #vecs = getFeatsMP((srcSs,refs))
     for v in vecs:
@@ -69,19 +70,78 @@ def main(sourceF, aligns):
     perceptron = perceptron.fit(X,y)
 
     print 'start searching'
-    print score(srcSs[0],1,4)
+    for srcS in srcSs[4*split:]:
+        perms = []
+        for j in range(3):
+            perms.append(permute(srcS)) # should define all itg neighbors
+        perms.append([6,7,8]) #swap is in reference alignments - for testing purposes
+        print perms
+        print srcS
+        nb = getBestNeighbor(srcS,perms)
+        print nb
 
+
+def getBestNeighbor(srcS, perms):
+    n = len(srcS)
+    beta = {}
+    delta = {}
+    for i in range(n-1):
+        beta[i,i+1] = 0
+        for k in range(n)[i+1:]:
+            for j in range(k-i+1):
+                if [i,j,k] in perms:
+                    delta[i,j,k]=0
+
+    swap = [0,0,0]
+    for w in range(n)[2:]:
+        for i in range(n-w):
+            k=i+w
+            beta[i,k]=-10**10
+            for j in range(n)[i+1:k]:
+                if [i,j,k] in perms:
+                    delta[i,j,k] = getDelta(srcS,i,j,k)
+                    bta = delta[i,j,k]+beta[i,j]+beta[j,k]
+                    if bta >= beta[i,k]:
+                        beta[i,k] = bta
+                        swap = [i,j,k]
+    print 'best swap', swap
+    return getSwap(srcS,swap)
+                    
+        
+
+def getDelta(srcS,i,j,k):
+    if i is j or j is k:
+        return 0
+    da = getDelta(srcS,i,j,k-1)
+    db = getDelta(srcS,i+1,j,k)
+    dc = getDelta(srcS,i+1,j,k-1)
+    dd = score(getSwap(srcS,[i,i+1,k]),i+1,k)
+    df = score(srcS,i+1,k)
+    return da+db-dc+dd-df
+
+def getSwap(src,swap):
+    [i,j,k] = swap
+    permS = []
+    if sum(swap) is 0:
+        return src
+    permS.extend(src[:i+1])
+    permS.extend(src[j+1:k+1])
+    permS.extend(src[i+1:j+1])
+    permS.extend(src[k+1:])
+    return permS
     
 def score(sen,l,r):
+    if l>r: #swap words
+        print 'l to the right of r ...'
     d = r-l
     score = 0
     intervalVecs = []
     
-    for i in range(d-1):
-        for j in range(d):
+    for i in range(len(sen[l:r])):
+        for j in range(len(sen[l+1:r+1])):
             sampleFts = []
             for t in templates:
-                feat = getFeat(sen,l+i,r+j+1,[templateFts[n] for n in t])
+                feat = getFeat(sen,l+i,l+1+j,[templateFts[n] for n in t])
                 sampleFts.append(feat)
                 if d > 10:
                     d = 11
@@ -128,10 +188,15 @@ def getVecs(samples,train=True):
         return csr_matrix(X)
 # random reordering, must be replaced by ITG neigbor
 def permute(srcS):
+    perm = [randint(0,len(srcS)) for i in range(3)]
+    perm.sort()
+    return perm
+    
+    """
     shuffled = np.arange(len(srcS))
     shuffle(shuffled)
     return [srcS[i] for i in shuffled]
-
+    """
 # sets source tokens in target order
 def getReference(src, alignsS):
     ltoker = tokenize.RegexpTokenizer('\d+-\d+')
