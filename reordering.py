@@ -97,16 +97,16 @@ def main(sourceF, aligns):
 def getBestNeighbor((srcSs, permus)):
     nhbs = []
     for srcS,perms in zip(srcSs,permus):
+        print '---\n',srcS,'\n', perms, '---\n'
         n = len(srcS)
         beta = {}
         delta = {}
         for i in range(n-1):
             beta[i,i+1] = 0
-            for k in range(n)[i+1:]:
-                for j in range(k-i+1):
-                    if [i,j,k] in perms:
-                        delta[i,j,k]=0
-
+            for k in range(i,n):
+                delta[i,i,k]=0
+                delta[i,k,k]=0
+                   
         swap = [0,0,0]
         for w in range(n)[2:]:
             for i in range(n-w):
@@ -114,7 +114,8 @@ def getBestNeighbor((srcSs, permus)):
                 beta[i,k]=-10**10
                 for j in range(n)[i+1:k]:
                     if [i,j,k] in perms:
-                        delta[i,j,k] = getDelta(srcS,i,j,k)
+                        if (i,j,k) not in delta:
+                            delta = getDelta(srcS,i,j,k,delta)
                         bta = delta[i,j,k]+beta[i,j]+beta[j,k]
                         if bta >= beta[i,k]:
                             beta[i,k] = bta
@@ -125,16 +126,26 @@ def getBestNeighbor((srcSs, permus)):
                     
         
 
-def getDelta(srcS,i,j,k):
-    if i is j or j is k:
-        return 0
+def getDelta(srcS,i,j,k,delta):
+    if (i,j,k-1) not in delta:
+        delta = getDelta(srcS,i,j,k-1,delta)
+    if (i+1,j,k) not in delta:
+        delta = getDelta(srcS,i+1,j,k,delta)
+    if (i+1,j,k-1) not in delta:
+        delta = getDelta(srcS,i+1,j,k-1,delta)
+        
+    delta[i,j,k] =  delta[i,j,k-1]+delta[i+1,j,k]-delta[i+1,j,k-1]+score(getSwap(srcS,[i,i+1,k]),i+1,k)-score(srcS,i+1,k)
+    return delta
+    """
     da = getDelta(srcS,i,j,k-1)
     db = getDelta(srcS,i+1,j,k)
     dc = getDelta(srcS,i+1,j,k-1)
     dd = score(getSwap(srcS,[i,i+1,k]),i+1,k)
     df = score(srcS,i+1,k)
-    return da+db-dc+dd-df
 
+    return da+db-dc+dd-df
+    """
+    
 def getSwap(src,swap):
     [i,j,k] = swap
     permS = []
