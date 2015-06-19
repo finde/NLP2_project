@@ -1,17 +1,18 @@
 #!/bin/bash
 
 DATA_FOLDER="data"
-CDEC_CORPUS_TOOLS="./cdec/corpus"
 FAST_ALIGN="./fast_align-master/fast_align" # or FAST_ALIGN="./cdec/fast_align"
-SYM_ALIGN="./cdec/build/utils/atools"
-EXTRACTOR="./cdec/build/extractor"
-COMPOUND_SPLIT="./cdec/build/compound-split"
-
+CDEC="./cdec"
+CDEC_CORPUS_TOOLS="${CDEC}/corpus"
+SYM_ALIGN="${CDEC}/build/utils/atools"
+EXTRACTOR="${CDEC}/build/extractor"
+COMPOUND_SPLIT="${CDEC}/build/compound-split"
+N=10
 
 if [ "$1" == "simple" ]
 then
     N=$2
-    DATA_FOLDER="data/simple"
+    DATA_FOLDER="data/simple_${N}"
     rm -rf ${DATA_FOLDER} 2> /dev/null
     mkdir ${DATA_FOLDER}
     head -n ${N} data/train.en > ${DATA_FOLDER}/train.en
@@ -64,30 +65,41 @@ echo "    Extract grammars    "
 echo "========================"
 ${EXTRACTOR}/extract -c ${DATA_FOLDER}/extract.ini -g ${DATA_FOLDER}/grammars -t 8 < ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en-de.sgm
 
-rm -f ${DATA_FOLDER}/itg.en.dirty 2> /dev/null
+rm -f ${DATA_FOLDER}/itg.en 2> /dev/null
 echo "[S] ||| [X] ||| 1.0" >> ${DATA_FOLDER}/itg.en
-echo "[X] ||| [X] ||| 0.5" >> ${DATA_FOLDER}/itg.en
-tLen=$(ls -1 ${DATA_FOLDER}/grammars/grammar.* | wc -l)
-for (( i=0; i<${tLen}; i++ ));
-do
-    f=${DATA_FOLDER}/grammars/grammar.${i}
-    echo "Processing $f"
-    # take action on each file. $f store current file name
-    cat ${f} | awk '{split($0,a," [|][|][|] "); print a[1],"|||",a[2],"||| 0.1"}' | sed -e 's/\[X,1\]/\[X\]/g' | sed -e 's/\[X,2\]/\[X\]/g' | awk '!a[$0]++' >> ${DATA_FOLDER}/itg.en.dirty
-done
+#echo "[X] ||| [X] ||| 0.5" >> ${DATA_FOLDER}/itg.en
+f=${DATA_FOLDER}/grammars/grammar.*
 
-cat ${DATA_FOLDER}/itg.en.dirty | awk '!a[$0]++' >> ${DATA_FOLDER}/itg.en && rm -f ${DATA_FOLDER}/itg.en.dirty
+cat ${f} \
+    | awk '
+        function get_number(x) {
+            split(x,xright," CountEF=");
+            split(xright[2], x," MaxLexFgivenE");
+            return x[1]
+        }
+        BEGIN {}
+        {
+            split($0,a," [|][|][|] ");
+            print a[1],"|||",a[2],"||| -==- ",get_number(a[4])
+        }
+        END{}
+    ' \
+    | sed -e 's/\[X,1\]/\[X\]/g' \
+    | sed -e 's/\[X,2\]/\[X\]/g' \
+    | sort -t '-' \
+    | python merge_count.py \
+    >> ${DATA_FOLDER}/itg.en
 
-#get english sents only
-cat ${DATA_FOLDER}/training.en-de | sed 's/ |||.*//g' > ${DATA_FOLDER}/training.en
+# get english sents only
+${CDEC_CORPUS_TOOLS}/cut-corpus.pl 1 ${DATA_FOLDER}/training.en-de > ${DATA_FOLDER}/training.en
 
 # get ITG FOREST
 echo "======================"
 echo "    Get ITG forest    "
 echo "======================"
-python pcfg-sampling/itg-parse.py ${DATA_FOLDER}/itg.en ${DATA_FOLDER}/training.en > ${DATA_FOLDER}/itg.forest.en
+python ./pcfg-sampling/itg-parse.py ${DATA_FOLDER}/itg.en ${DATA_FOLDER}/training.en > ${DATA_FOLDER}/itg.forest.en
 
-#download and unzip stanford basic POS tagger
+# download and unzip stanford basic POS tagger
 cd stanford-postagger-2015-04-20/
 java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../${DATA_FOLDER}/training.en > ../${DATA_FOLDER}/training.tagged.en
 
