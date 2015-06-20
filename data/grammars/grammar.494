@@ -1,4 +1,4 @@
-[X] ||| [X,1] are ||| [X,1] in ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.86076567227 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
+[X] ||| [X,1] are ||| [X,1] in ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.84056228618 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
 [X] ||| [X,1] are ||| [X,1] mittel ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0.726998727936 MaxLexEgivenF=1.58357658563 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
 [X] ||| [X,1] are ||| [X,1] werden ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 1-1
 [X] ||| [X,1] are ||| [X,1] sind ||| EgivenFCoherent=1.42324587394 SampleCountF=2.02938377769 CountEF=0.698970004336 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 1-1
@@ -15,7 +15,7 @@
 [X] ||| [X,1] are [X,2] ||| [X,1] [X,2] werden ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=1 ||| 1-2
 [X] ||| [X,1] are [X,2] ||| [X,1] [X,2] sind ||| EgivenFCoherent=1.7242758696 SampleCountF=2.02938377769 CountEF=0.47712125472 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 1-2
 [X] ||| [X,1] are [X,2] ||| [X,1] , daß [X,2] statt finden ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0 MaxLexEgivenF=7.84656454819 IsSingletonF=0 IsSingletonFE=1 ||| 1-1 1-2 1-5
-[X] ||| [X,1] are [X,2] ||| [X,1] in [X,2] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.86076567227 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
+[X] ||| [X,1] are [X,2] ||| [X,1] in [X,2] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.84056228618 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
 [X] ||| [X,1] are [X,2] ||| [X,1] mittel [X,2] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0.726998727936 MaxLexEgivenF=1.58357658563 IsSingletonF=0 IsSingletonFE=1 ||| 1-1
 [X] ||| [X,1] are [X,2] ||| [X,1] werden [X,2] ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 1-1
 [X] ||| [X,1] are [X,2] ||| [X,1] sind [X,2] ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 1-1
@@ -32,7 +32,7 @@
 [X] ||| are ||| , ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
 [X] ||| are ||| die ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.41213295536 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
 [X] ||| are ||| den ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.95253604563 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
-[X] ||| are ||| in ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.86076567227 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
+[X] ||| are ||| in ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.84056228618 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
 [X] ||| are ||| mittel ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0.726998727936 MaxLexEgivenF=1.58357658563 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
 [X] ||| are ||| werden ||| EgivenFCoherent=1.18020782525 SampleCountF=2.02938377769 CountEF=0.903089986992 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
 [X] ||| are ||| sind ||| EgivenFCoherent=0.911362512958 SampleCountF=2.02938377769 CountEF=1.14612803568 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
@@ -47,7 +47,7 @@
 [X] ||| are [X,1] ||| [X,1] werden ||| EgivenFCoherent=1.7242758696 SampleCountF=2.02938377769 CountEF=0.47712125472 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 0-1
 [X] ||| are [X,1] ||| [X,1] sind ||| EgivenFCoherent=1.7242758696 SampleCountF=2.02938377769 CountEF=0.47712125472 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 0-1
 [X] ||| are [X,1] ||| , daß [X,1] statt finden ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0 MaxLexEgivenF=7.84656454819 IsSingletonF=0 IsSingletonFE=1 ||| 0-0 0-1 0-4
-[X] ||| are [X,1] ||| in [X,1] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.86076567227 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
+[X] ||| are [X,1] ||| in [X,1] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=1.9642167602 MaxLexEgivenF=1.84056228618 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
 [X] ||| are [X,1] ||| mittel [X,1] ||| EgivenFCoherent=2.02530586526 SampleCountF=2.02938377769 CountEF=0.301029995664 MaxLexFgivenE=0.726998727936 MaxLexEgivenF=1.58357658563 IsSingletonF=0 IsSingletonFE=1 ||| 0-0
 [X] ||| are [X,1] ||| werden [X,1] ||| EgivenFCoherent=1.54818461055 SampleCountF=2.02938377769 CountEF=0.602059991328 MaxLexFgivenE=0.940878547881 MaxLexEgivenF=1.0193051552 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
 [X] ||| are [X,1] ||| sind [X,1] ||| EgivenFCoherent=1.42324587394 SampleCountF=2.02938377769 CountEF=0.698970004336 MaxLexFgivenE=0.595985843616 MaxLexEgivenF=0.80542533525 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
@@ -106,10 +106,10 @@
 [X] ||| ? ||| ? ||| EgivenFCoherent=0.0483046795746 SampleCountF=1.30102999566 CountEF=1.2552725051 MaxLexFgivenE=0.0234810958495 MaxLexEgivenF=0.0457574905607 IsSingletonF=0 IsSingletonFE=0 ||| 0-0
 [X] ||| are there ||| gibt es ||| EgivenFCoherent=0.301029995664 SampleCountF=0.47712125472 CountEF=0.301029995664 MaxLexFgivenE=1.3022346968 MaxLexEgivenF=1.95544721058 IsSingletonF=1 IsSingletonFE=1 ||| 0-0 1-0 1-1
 [X] ||| are there [X,1] ||| gibt es [X,1] ||| EgivenFCoherent=0.301029995664 SampleCountF=0.47712125472 CountEF=0.301029995664 MaxLexFgivenE=1.3022346968 MaxLexEgivenF=1.95544721058 IsSingletonF=1 IsSingletonFE=1 ||| 0-0 1-0 1-1
-[X] ||| [X,1] are [X,2] ? ||| [X,1] zu [X,2] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.61595860084 IsSingletonF=0 IsSingletonFE=1 ||| 3-3
-[X] ||| [X,1] are [X,2] ? ||| [X,1] in [X,2] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.90652316283 IsSingletonF=0 IsSingletonFE=1 ||| 1-1 3-3
+[X] ||| [X,1] are [X,2] ? ||| [X,1] zu [X,2] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.62668246624 IsSingletonF=0 IsSingletonFE=1 ||| 3-3
+[X] ||| [X,1] are [X,2] ? ||| [X,1] in [X,2] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.88631977674 IsSingletonF=0 IsSingletonFE=1 ||| 1-1 3-3
 [X] ||| [X,1] are [X,2] ? ||| [X,1] finden [X,2] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=0.0234810958495 MaxLexEgivenF=1.62933407619 IsSingletonF=0 IsSingletonFE=1 ||| 1-1 3-3
-[X] ||| are [X,1] ? ||| in [X,1] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.90652316283 IsSingletonF=0 IsSingletonFE=1 ||| 0-0 2-2
+[X] ||| are [X,1] ? ||| in [X,1] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=1.98769785605 MaxLexEgivenF=1.88631977674 IsSingletonF=0 IsSingletonFE=1 ||| 0-0 2-2
 [X] ||| are [X,1] ? ||| finden [X,1] ? ||| EgivenFCoherent=0.698970004336 SampleCountF=0.778151250384 CountEF=0.301029995664 MaxLexFgivenE=0.0234810958495 MaxLexEgivenF=1.62933407619 IsSingletonF=0 IsSingletonFE=1 ||| 0-0 2-2
 [X] ||| [X,1] there [X,2] ? ||| [X,1] arbeit [X,2] ? ||| EgivenFCoherent=0.47712125472 SampleCountF=0.602059991328 CountEF=0.301029995664 MaxLexFgivenE=1.21381279402 MaxLexEgivenF=1.50060235057 IsSingletonF=1 IsSingletonFE=1 ||| 1-1 3-3
 [X] ||| there [X,1] ? ||| arbeit [X,1] ? ||| EgivenFCoherent=0.47712125472 SampleCountF=0.602059991328 CountEF=0.301029995664 MaxLexFgivenE=1.21381279402 MaxLexEgivenF=1.50060235057 IsSingletonF=1 IsSingletonFE=1 ||| 0-0 2-2

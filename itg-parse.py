@@ -46,6 +46,8 @@ def main(args):
     if args.output_file:
         out_f = open(args.output_file, "w")
         out_f.close()
+        out_f = open(args.output_file + '.raw', "w")
+        out_f.close()
 
     if args.use_cache:
         map_file = args.use_cache + '/' + 'map.txt'
@@ -103,11 +105,14 @@ def main(args):
         if args.best:
             if forest == 'NO PARSE FOUND':
                 sentence = 'NO PARSE FOUND'
+                derivation = 'NO PARSE FOUND'
 
             else:
                 permutation_score = find_viterbi(forest, '[GOAL]')
-                permutation_score = sorted(permutation_score.iteritems(), key=lambda (k, v): v)
-                (words, score) = permutation_score[0]
+                projection_score = sorted(permutation_score['p'].iteritems(), key=lambda (k, v): v, reverse=True)
+                derivation_score = sorted(permutation_score['d'].iteritems(), key=lambda (k, v): v, reverse=True)
+                (words, score) = projection_score[0]
+                (derivation, score) = derivation_score[0]
                 sentence = ' '.join(words)
 
             if args.output_file:
@@ -115,7 +120,13 @@ def main(args):
                 out_f.write("%s\n" % sentence)
                 out_f.close()
 
+                tree = "# TREE\n%s\n\n" % '),\n['.join(derivation.__str__().split('), ['))
+                out_f = open(args.output_file + '.raw', "a")
+                out_f.write(tree)
+                out_f.close()
+
             print sentence + " ||| " + str(score)
+            print tree
         else:
             print '# FOREST'
             print forest
@@ -123,7 +134,7 @@ def main(args):
 
 
 def find_viterbi(wcfg, root):
-    def recursion(derivation, projection, Q, wcfg, counts):
+    def recursion(derivation, projection, Q, wcfg, scores):
         # print 'd:', '|'.join(str(r) for r in derivation)
         # print 'p:', projection
         # print 'Q:', Q
@@ -131,22 +142,26 @@ def find_viterbi(wcfg, root):
             sym = Q.popleft()
             # print ' pop:', sym
             if is_terminal(sym):
-                recursion(derivation, [sym] + projection, Q, wcfg, counts)
+                recursion(derivation, [sym] + projection, Q, wcfg, scores)
             else:
                 for rule in wcfg[sym]:
                     # print '  rule:', rule
                     QQ = deque(Q)
                     QQ.extendleft(rule.rhs)
-                    recursion(derivation + [rule], projection, QQ, wcfg, counts)
+                    recursion(derivation + [rule], projection, QQ, wcfg, scores)
         else:
             score = sum([r.log_prob for r in derivation])
-            if counts[tuple(projection)] < score:
-                counts[tuple(projection)] = score
+
+            if scores['d'][tuple(derivation)] < score:
+                scores['d'][tuple(derivation)] = score
+
+            if scores['p'][tuple(projection)] < score:
+                scores['p'][tuple(projection)] = score
 
 
-    counts = defaultdict(float)
-    recursion([], [], deque([root]), wcfg, counts)
-    return counts
+    scores = {'d': defaultdict(float), 'p': defaultdict(float)}
+    recursion([], [], deque([root]), wcfg, scores)
+    return scores
 
 
 def argparser():
