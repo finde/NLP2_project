@@ -43,7 +43,6 @@ def get_forest(input_str, wcfg):
 
 
 def main(args):
-
     if args.output_file:
         out_f = open(args.output_file, "w")
         out_f.close()
@@ -61,11 +60,10 @@ def main(args):
     # print 'GRAMMAR'
     # print wcfg
 
-    for input_str in args.input:
+    for str_no, input_str in enumerate(args.input):
 
         if args.use_cache:
-            hashed_str = hashlib.md5(input_str.encode()).hexdigest()
-            forest_file = args.use_cache + '/' + hashed_str + '.cp'
+            forest_file = "%s/grammars.%s.cp" % (args.use_cache, str(str_no))
             map_file = args.use_cache + '/' + 'map.txt'
 
             map = open(map_file, "w")
@@ -86,7 +84,7 @@ def main(args):
 
             # store map
             map = open(map_file, "a")
-            map.write("%s\t%s\n" % (hashed_str, input_str.replace("\n", "")))
+            map.write("%s\t%s\n" % (str(str_no), input_str.replace("\n", "")))
             map.close()
 
         else:
@@ -142,7 +140,7 @@ def find_viterbi(wcfg, root):
                     recursion(derivation + [rule], projection, QQ, wcfg, counts)
         else:
             score = sum([r.log_prob for r in derivation])
-            if counts[tuple(projection)] > score:
+            if counts[tuple(projection)] < score:
                 counts[tuple(projection)] = score
 
 
