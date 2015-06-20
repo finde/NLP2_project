@@ -19,13 +19,13 @@ then
     head -n ${N} data/train.de > ${DATA_FOLDER}/train.de
 fi
 
-#./data_prep/compound_splitting.sh
-#./data_prep/tokenize.sh
-#./data_prep/filter_long_sentences.sh
-#./data_prep/bidirectional_alignment.sh
-#./data_prep/grammar_extraction.sh
-#./data_prep/merge_grammars.sh
-#./data_prep/extract_training_data.sh
+./data_prep/compound_splitting.sh
+./data_prep/tokenize.sh
+./data_prep/filter_long_sentences.sh
+./data_prep/bidirectional_alignment.sh
+./data_prep/grammar_extraction.sh
+./data_prep/merge_grammars.sh
+./data_prep/extract_training_data.sh
 ./data_prep/extract_best_itg.sh
 
 # download and unzip stanford basic POS tagger
