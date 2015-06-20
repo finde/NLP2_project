@@ -103,6 +103,7 @@ def main(args):
             print
 
         if args.best:
+            p_score = 0
             if forest == 'NO PARSE FOUND':
                 sentence = 'NO PARSE FOUND'
                 derivation = 'NO PARSE FOUND'
@@ -111,21 +112,22 @@ def main(args):
                 permutation_score = find_viterbi(forest, '[GOAL]')
                 projection_score = sorted(permutation_score['p'].iteritems(), key=lambda (k, v): v, reverse=True)
                 derivation_score = sorted(permutation_score['d'].iteritems(), key=lambda (k, v): v, reverse=True)
-                (words, score) = projection_score[0]
-                (derivation, score) = derivation_score[0]
+                (words, p_score) = projection_score[0]
+                (derivation, d_score) = derivation_score[0]
                 sentence = ' '.join(words)
+
+            tree = "# TREE\n%s\n\n" % '),\n['.join(derivation.__str__().split('), ['))
 
             if args.output_file:
                 out_f = open(args.output_file, "a")
                 out_f.write("%s\n" % sentence)
                 out_f.close()
 
-                tree = "# TREE\n%s\n\n" % '),\n['.join(derivation.__str__().split('), ['))
                 out_f = open(args.output_file + '.raw', "a")
                 out_f.write(tree)
                 out_f.close()
 
-            print sentence + " ||| " + str(score)
+            print sentence + " ||| " + str(p_score)
             print tree
         else:
             print '# FOREST'
