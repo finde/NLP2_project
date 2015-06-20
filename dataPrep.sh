@@ -27,9 +27,7 @@ fi
 ./data_prep/merge_grammars.sh
 ./data_prep/extract_training_data.sh
 ./data_prep/extract_best_itg.sh
+./data_prep/pos_tag.sh
 
-# download and unzip stanford basic POS tagger
-#cd stanford-postagger-2015-04-20/
-#java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../${DATA_FOLDER}/training.en > ../${DATA_FOLDER}/training.tagged.en
 
 

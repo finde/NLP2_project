@@ -9,6 +9,7 @@ import os
 import sys
 import hashlib
 from collections import defaultdict, deque
+from multiprocessing import Pool
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + '/pcfg-sampling')
 
@@ -42,6 +43,11 @@ def get_forest(input_str, wcfg):
 
 
 def main(args):
+
+    if args.output_file:
+        out_f = open(args.output_file, "w")
+        out_f.close()
+
     if args.use_cache:
         wcfg_file = args.use_cache + '/wcfg.cp'
         if os.path.isfile(wcfg_file):
@@ -61,7 +67,9 @@ def main(args):
             hashed_str = hashlib.md5(input_str.encode()).hexdigest()
             forest_file = args.use_cache + '/' + hashed_str + '.cp'
             map_file = args.use_cache + '/' + 'map.txt'
-            output_file = args.use_cache + '/' + 'map.txt'
+
+            map = open(map_file, "w")
+            map.close()
 
             if os.path.isfile(forest_file):
                 # load cache
@@ -76,9 +84,11 @@ def main(args):
                 cPickle.dump(forest, forest_file)
                 forest_file.close()
 
-                # store map
-                with open(map_file, "a") as map:
-                    map.write("%s\t%s\n" % (hashed_str, input_str.replace("\n", "")))
+            # store map
+            map = open(map_file, "a")
+            map.write("%s\t%s\n" % (hashed_str, input_str.replace("\n", "")))
+            map.close()
+
         else:
             forest = get_forest(input_str, wcfg)
 
@@ -94,7 +104,7 @@ def main(args):
 
         if args.best:
             if forest == 'NO PARSE FOUND':
-                print input_str.replace("\n", "")
+                sentence = 'NO PARSE FOUND'
 
             else:
                 permutation_score = find_viterbi(forest, '[GOAL]')
@@ -103,8 +113,9 @@ def main(args):
                 sentence = ' '.join(words)
 
             if args.output_file:
-                with open(map_file, "a") as map:
-                    map.write("%s\t%s\n" % (hashed_str, sentence))
+                out_f = open(args.output_file, "a")
+                out_f.write("%s" % sentence)
+                out_f.close()
 
             print sentence + " ||| " + str(score)
         else:
