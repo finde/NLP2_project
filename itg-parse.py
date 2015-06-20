@@ -114,7 +114,7 @@ def main(args):
 
             if args.output_file:
                 out_f = open(args.output_file, "a")
-                out_f.write("%s" % sentence)
+                out_f.write("%s\n" % sentence)
                 out_f.close()
 
             print sentence + " ||| " + str(score)
