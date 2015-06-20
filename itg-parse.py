@@ -48,6 +48,10 @@ def main(args):
         out_f.close()
 
     if args.use_cache:
+        map_file = args.use_cache + '/' + 'map.txt'
+        map = open(map_file, "w")
+        map.close()
+
         wcfg_file = args.use_cache + '/wcfg.cp'
         if os.path.isfile(wcfg_file):
             wcfg = cPickle.load(open(wcfg_file, 'r'))
@@ -64,10 +68,6 @@ def main(args):
 
         if args.use_cache:
             forest_file = "%s/grammars.%s.cp" % (args.use_cache, str(str_no))
-            map_file = args.use_cache + '/' + 'map.txt'
-
-            map = open(map_file, "w")
-            map.close()
 
             if os.path.isfile(forest_file):
                 # load cache
