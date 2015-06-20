@@ -76,7 +76,7 @@ def main(args):
 
                 # store map
                 with open(map_file, "a") as map:
-                    map.write("%s\t%s" % (input_str, hashed_str))
+                    map.write("%s\t%s" % (input_str.replace("\n"), hashed_str))
         else:
             forest = get_forest(input_str, wcfg)
 
