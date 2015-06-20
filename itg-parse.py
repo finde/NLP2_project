@@ -61,6 +61,7 @@ def main(args):
             hashed_str = hashlib.md5(input_str.encode()).hexdigest()
             forest_file = args.use_cache + '/' + hashed_str + '.cp'
             map_file = args.use_cache + '/' + 'map.txt'
+            output_file = args.use_cache + '/' + 'map.txt'
 
             if os.path.isfile(forest_file):
                 # load cache
@@ -77,7 +78,7 @@ def main(args):
 
                 # store map
                 with open(map_file, "a") as map:
-                    map.write("%s\t%s" % (hashed_str, input_str.replace("\n", "")))
+                    map.write("%s\t%s\n" % (hashed_str, input_str.replace("\n", "")))
         else:
             forest = get_forest(input_str, wcfg)
 
@@ -98,8 +99,14 @@ def main(args):
             else:
                 permutation_score = find_viterbi(forest, '[GOAL]')
                 permutation_score = sorted(permutation_score.iteritems(), key=lambda (k, v): v)
-                (sentence, score) = permutation_score[0]
-                print ' '.join(sentence)
+                (words, score) = permutation_score[0]
+                sentence = ' '.join(words)
+
+            if args.output_file:
+                with open(map_file, "a") as map:
+                    map.write("%s\t%s\n" % (hashed_str, sentence))
+
+            print sentence + " ||| " + str(score)
         else:
             print '# FOREST'
             print forest
@@ -113,12 +120,12 @@ def find_viterbi(wcfg, root):
         # print 'Q:', Q
         if Q:
             sym = Q.popleft()
-            #print ' pop:', sym
+            # print ' pop:', sym
             if is_terminal(sym):
                 recursion(derivation, [sym] + projection, Q, wcfg, counts)
             else:
                 for rule in wcfg[sym]:
-                    #print '  rule:', rule
+                    # print '  rule:', rule
                     QQ = deque(Q)
                     QQ.extendleft(rule.rhs)
                     recursion(derivation + [rule], projection, QQ, wcfg, counts)
@@ -152,11 +159,17 @@ def argparser():
     parser.add_argument('--show-permutations',
                         action='store_true',
                         help='dumps all permutations (use with caution)')
+
     parser.add_argument('--verbose', '-v',
                         action='store_true', default=True,
                         help='increase the verbosity level')
+
+    parser.add_argument('--output-file', '-o',
+                        type=str,
+                        help='save output to file')
+
     parser.add_argument('--best', '-b',
-                        default=False,
+                        action='store_true', default=False,
                         help='return best order')
 
     parser.add_argument('--use-cache', '-c',
