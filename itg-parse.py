@@ -8,6 +8,7 @@ import argparse
 import os
 import sys
 import hashlib
+from collections import defaultdict, deque
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + '/pcfg-sampling')
 
@@ -76,7 +77,7 @@ def main(args):
 
                 # store map
                 with open(map_file, "a") as map:
-                    map.write("%s\t%s" % (hashed_str, input_str.replace("\n","")))
+                    map.write("%s\t%s" % (hashed_str, input_str.replace("\n", "")))
         else:
             forest = get_forest(input_str, wcfg)
 
@@ -91,30 +92,45 @@ def main(args):
             print
 
         if args.best:
-            print forest
+            if forest == 'NO PARSE FOUND':
+                print input_str.replace("\n", "")
+
+            else:
+                permutation_score = find_viterbi(forest, '[GOAL]')
+                permutation_score = sorted(permutation_score.iteritems(), key=lambda (k, v): v)
+                (sentence, score) = permutation_score[0]
+                print ' '.join(sentence)
         else:
             print '# FOREST'
             print forest
             print
 
 
-def find_viterbi(forest):
-    for rule in forest.split("\n"):
-        if rule == 'NO PARSE FOUND':
-            return 'NO PARSE FOUND'
-
-        elif rule == '# FOREST':
-            continue
-
+def find_viterbi(wcfg, root):
+    def recursion(derivation, projection, Q, wcfg, counts):
+        # print 'd:', '|'.join(str(r) for r in derivation)
+        # print 'p:', projection
+        # print 'Q:', Q
+        if Q:
+            sym = Q.popleft()
+            #print ' pop:', sym
+            if is_terminal(sym):
+                recursion(derivation, [sym] + projection, Q, wcfg, counts)
+            else:
+                for rule in wcfg[sym]:
+                    #print '  rule:', rule
+                    QQ = deque(Q)
+                    QQ.extendleft(rule.rhs)
+                    recursion(derivation + [rule], projection, QQ, wcfg, counts)
         else:
-            score = float(rule.split(' ')[-1].replace('(', '').replace(')', ''))
-            rule_array = (' '.join(rule.split()[:-1])).split(' -> ')
-            src = rule_array[0]
-            tgt = rule_array[1]
+            score = sum([r.log_prob for r in derivation])
+            if counts[tuple(projection)] > score:
+                counts[tuple(projection)] = score
 
-            print rule, src, tgt
 
-    pass
+    counts = defaultdict(float)
+    recursion([], [], deque([root]), wcfg, counts)
+    return counts
 
 
 def argparser():

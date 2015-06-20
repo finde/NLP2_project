@@ -57,7 +57,7 @@ def main(sourceF, aligns):
     testSs = srcSs[4 * split:]
     testPerms = perms[4 * split:]
     testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
-    iters = 2  # untill measure gives low error
+    iters = 2  # until measure gives low error
     for i in range(iters):
         p = Pool(4)
         if i > 0:

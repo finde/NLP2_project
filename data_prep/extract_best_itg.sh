@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
+echo "========================"
+echo "    Extract best ITG    "
+echo "========================"
+python ./itg-parse.py ${DATA_FOLDER}/training.en -g ${DATA_FOLDER}/itg.en -c ${DATA_FOLDER}/caches -b 1 > ${DATA_FOLDER}/itg.best.en
+
 echo "========================="
 echo "    Extract best ITG    "
 echo "========================"
-python ./itg-parse.py ${DATA_FOLDER}/training.en -g ${DATA_FOLDER}/itg.en -c ${DATA_FOLDER}/caches -b 1
 
 
 # get the forest
