@@ -8,6 +8,7 @@ from sklearn.linear_model import Perceptron
 from scipy.sparse import csr_matrix
 from multiprocessing import Pool
 from random import randint
+import argparse
 
 # feature templates as defined in Tromble
 templateFts = ['tlm1', 'wl', 'tl', 'tlp1', 'tb', 'trm1', 'wr', 'tr', 'trp1']
@@ -37,7 +38,10 @@ perceptron = Perceptron(penalty=None, alpha=0.0001, fit_intercept=True, n_iter=1
 
 
 # main procedure
-def main(sourceF, aligns):
+def main(args):
+    sourceF = args.source_language
+    aligns = args.alignments
+
     toker = tokenize.RegexpTokenizer('\w+|\S+')
     global features
     features = setFeatures(sourceF)
@@ -346,6 +350,24 @@ def getFeat(w, l, r, t):
     return feat[:-1]
 
 
-if __name__ == "__main__":
-    main("data/training.tagged.en.test", "data/training.gdfa.test")
+def argparser():
+    """parse command line arguments"""
 
+    parser = argparse.ArgumentParser(prog='parse')
+
+    parser.description = 'Reordering'
+    parser.formatter_class = argparse.ArgumentDefaultsHelpFormatter
+
+    parser.add_argument('--source-language', '-s',
+                        type=str,
+                        help='source language file path')
+
+    parser.add_argument('--alignments', '-a',
+                        type=str,
+                        help='alignment file path')
+
+    return parser
+
+
+if __name__ == '__main__':
+    main(argparser().parse_args())
