@@ -13,6 +13,7 @@ searching best neighbors
 [[5, 9, 16], [22, 30, 34]] ---
 
 ---
+<<<<<<< HEAD
 ['although_IN', ',_,', 'as_IN', 'you_PRP', 'will_MD', 'have_VB', 'seen_VBN', ',_,', 'the_DT', 'dreaded_VBN', "'_POS", 'millennium_JJ', 'bug_NN', "'_''", 'failed_VBD', 'to_TO', 'materialise_VB', ',_,', 'still_RB', 'the_DT', 'people_NNS', 'in_IN', 'a_DT', 'number_NN', 'of_IN', 'countries_NNS', 'suffered_VBD', 'a_DT', 'series_NN', 'of_IN', 'natural_JJ', 'disasters_NNS', 'that_WDT', 'truly_RB', 'were_VBD', 'dreadful_JJ', '._.']
 [[11, 26, 35], [10, 15, 25]] ---
 
@@ -30,6 +31,24 @@ searching best neighbors
 
 ---
 ['i_LS', 'declare_VB', 'resumed_VBN', 'the_DT', 'session_NN', 'of_IN', 'the_DT', 'european_JJ', 'parliament_NN', 'adjourned_VBN', 'on_IN', 'friday_NNP', '17_CD', 'december_NNP', '1999_CD', ',_,', 'and_CC', 'i_LS', 'would_MD', 'like_VB', 'once_RB', 'again_RB', 'to_TO', 'wish_VB', 'you_PRP', 'a_DT', 'happy_JJ', 'new_JJ', 'year_NN', 'in_IN', 'the_DT', 'hope_NN', 'that_IN', 'you_PRP', 'enjoyed_VBD', 'a_DT', 'pleasant_JJ', 'festive_JJ', 'period_NN', '._.']
+=======
+---
+['although_IN', ',_,', 'as_IN', 'you_PRP', 'will_MD', 'have_VB', 'seen_VBN', ',_,', 'the_DT', 'dreaded_VBN', "'_POS", 'millennium_JJ', 'bug_NN', "'_''", 'failed_VBD', 'to_TO', 'materialise_VB', ',_,', 'still_RB', 'the_DT', 'people_NNS', 'in_IN', 'a_DT', 'number_NN', 'of_IN', 'countries_NNS', 'suffered_VBD', 'a_DT', 'series_NN', 'of_IN', 'natural_JJ', 'disasters_NNS', 'that_WDT', 'truly_RB', 'were_VBD', 'dreadful_JJ', '._.'] 
+['you_PRP', 'have_VBP', 'requested_VBN', 'a_DT', 'debate_NN', 'on_IN', 'this_DT', 'subject_NN', 'in_IN', 'the_DT', 'course_NN', 'of_IN', 'the_DT', 'next_JJ', 'few_JJ', 'days_NNS', ',_,', 'during_IN', 'this_DT', 'part_NN', '-_:', 'session_NN', '._.'] 
+[[8, 17, 23], [15, 15, 18]] ---
+
+[[11, 26, 35], [10, 15, 25]] ---
+
+building train vectors
+start training
+searching best neighbors
+---
+---
+['resumption_NN', 'the_DT', 'of_IN', 'session_NN', '._.'] 
+['i_LS', 'declare_VB', 'resumed_VBN', 'the_DT', 'session_NN', 'of_IN', 'the_DT', 'european_JJ', 'parliament_NN', 'adjourned_VBN', 'on_IN', 'friday_NNP', '17_CD', 'december_NNP', '1999_CD', ',_,', 'and_CC', 'i_LS', 'would_MD', 'like_VB', 'once_RB', 'again_RB', 'to_TO', 'wish_VB', 'you_PRP', 'a_DT', 'happy_JJ', 'new_JJ', 'year_NN', 'in_IN', 'the_DT', 'hope_NN', 'that_IN', 'you_PRP', 'enjoyed_VBD', 'a_DT', 'pleasant_JJ', 'festive_JJ', 'period_NN', '._.'] 
+[[0, 1, 2], [3, 5, 5]] ---
+
+>>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
 [[5, 9, 16], [22, 30, 34]] ---
 
 ---
@@ -40,4 +59,10 @@ searching best neighbors
 ['you_PRP', 'have_VBP', 'requested_VBN', 'a_DT', 'debate_NN', 'on_IN', 'this_DT', 'subject_NN', 'in_IN', 'the_DT', 'course_NN', 'of_IN', 'the_DT', 'next_JJ', 'few_JJ', 'days_NNS', ',_,', 'during_IN', 'this_DT', 'part_NN', '-_:', 'session_NN', '._.'] 
 [[8, 17, 23], [15, 15, 18]] ---
 
+<<<<<<< HEAD
+=======
+building train vectors
+start training
+start testing
+>>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
 Sun Jun 14 15:33:36 CEST 2015
