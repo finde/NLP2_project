@@ -8,12 +8,8 @@ export SYM_ALIGN="${CDEC}/build/utils/atools"
 export EXTRACTOR="${CDEC}/build/extractor"
 export COMPOUND_SPLIT="${CDEC}/build/compound-split"
 export N=10
-<<<<<<< HEAD
 export MAX_LINES=1000
 export MAX_LENGTH=10
-=======
-export MAX_LENGTH=20
->>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
 
 if [ "$1" == "simple" ]
 then
@@ -37,12 +33,11 @@ then
     cp data/train.de ${DATA_FOLDER}/train.de
 fi
 
-<<<<<<< HEAD
 #./data_prep/merge_file.sh              # merge into en-de
 #./data_prep/filter_long_sentences.sh   # cut long sentence
 #./data_prep/compound_splitting.sh      # compound splitting
-#./data_prep/tokenize.sh                # tokenize
-#./data_prep/bidirectional_alignment.sh
+./data_prep/tokenize.sh                # tokenize
+./data_prep/bidirectional_alignment.sh
 ./data_prep/extract_training_data.sh
 
 # skip this
@@ -50,16 +45,6 @@ fi
 #./data_prep/merge_grammars.sh
 #./data_prep/extract_best_itg.sh
 
-=======
-#./data_prep/compound_splitting.sh
-#./data_prep/tokenize.sh
-#./data_prep/filter_long_sentences.sh
-./data_prep/bidirectional_alignment.sh
-#./data_prep/grammar_extraction.sh
-#./data_prep/merge_grammars.sh
-#./data_prep/extract_training_data.sh
-#./data_prep/extract_best_itg.sh
->>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
 ./data_prep/pos_tag.sh
 
 
