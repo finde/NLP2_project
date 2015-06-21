@@ -10,6 +10,8 @@ from multiprocessing import Pool
 from random import randint
 import argparse
 
+from itg_parse import main as itg_parser, is_nonterminal, is_terminal
+
 # feature templates as defined in Tromble
 templateFts = ['tlm1', 'wl', 'tl', 'tlp1', 'tb', 'trm1', 'wr', 'tr', 'trp1']
 templates = [[1, 2, 6, 7],
@@ -41,29 +43,65 @@ def generate_splits(n, split, A, B):
     return [(A[x * split:(x + 1) * split], B[x * split:(x + 1) * split]) for x in range(n)]
 
 
+def get_itg_permutations(src, tree, max_perms):
+    def rule_decoder(rule_str):
+        perm = []
+        lhs = rule_str[1:-1].split(',')[1].split('-')
+        i = int(lhs[0])
+        j = int(lhs[1])
+        perm.extend([i])
+        perm.extend([j])
+        perm.sort()
+
+        return perm
+
+    if tree != 'NO PARSE FOUND':
+        perms = []
+
+        for rule in tree:
+            if len(perms) < max_perms and len(rule.rhs) > 1 and sum(map(is_nonterminal, rule.rhs)) == 1:
+                # transform lhs and rhs to (i, j, k)
+                perm = rule_decoder(rule.lhs)
+                rhs = filter(lambda x: x.startswith('[X,'), rule.rhs)[0]
+                perm.extend(rule_decoder(rhs))
+                perms.append(list(set(perm)))
+
+        return perms
+
+
 # main procedure
 def main(args):
     sourceF = args.source_language
+    sourceF_no_tags = args.source_language_without_tags
     aligns = args.alignments
+
+    # todo: print settings
 
     toker = tokenize.RegexpTokenizer('\w+|\S+')
     global features
     features = setFeatures(sourceF)
     print 'nr.of feats: ', len(features)
+    print 'permutation:', 'ITG' if args.itg else 'Random'
     trainVecs = []
     srcSs = []
     refs = []
-    perms = []
-    with open(sourceF) as srcF, open(aligns) as srcRef:
-        for src, refAlign in izip(srcF, srcRef):
-            src = toker.tokenize(src)
+    perms = [[0, 0, 0]]
+    with open(sourceF) as srcF, open(aligns) as srcRef, open(sourceF_no_tags) as srcF_nt:
+        for str_no, (_src, refAlign, sentence) in enumerate(izip(srcF, srcRef, srcF_nt)):
+            src = toker.tokenize(_src)
             srcSs.append(src)
             refs.append(refAlign)
+
             # get permutation from ITG
-            perms.append(randomPermute(src, 5))
+            if args.itg:
+                tree = itg_parser(use_cache=args.use_cache, grammar_file=args.grammar, input_str=sentence, best=True,
+                                  key=str_no)
+                perms.append(get_itg_permutations(src, tree, 5))
+            else:
+                perms.append(randomPermute(src, 5))
 
     # train 75% - test 25%
-    ratio_train = .75
+    ratio_train = 100
     split_index = int(np.floor(len(srcSs) * ratio_train) + 1)
 
     split = split_index / (args.njobs)
@@ -73,7 +111,7 @@ def main(args):
     testPerms = perms[args.njobs * split:]
 
     # testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
-    iters = 2  # until measure gives low error
+    iters = 5  # until measure gives low error
     for i in range(iters):
         print '\n=== iteration %d ===' % (i + 1)
         p = Pool(args.njobs)
@@ -137,7 +175,7 @@ def getBestNeighbor((srcSs, permus)):
                             swap = [i, j, k]
 
         after_swapped = getSwap(srcS, swap)
-        print 'best swap', swap, '\t', after_swapped
+        print swap, '\t', srcS, '\t', after_swapped
         nhbs.append(after_swapped)
     return nhbs
 
@@ -369,14 +407,29 @@ def argparser():
                         type=str,
                         help='source language file path')
 
+    parser.add_argument('--source-language-without-tags', '-t',
+                        type=str,
+                        help='source language without tags file path')
+
     parser.add_argument('--alignments', '-a',
                         type=str,
                         help='alignment file path')
+
+    parser.add_argument('--itg',
+                        action='store_true', default=False,
+                        help='use itg instead of random permutation')
 
     parser.add_argument('--njobs', '-j',
                         type=int, default=1,
                         help='number of workers')
 
+    parser.add_argument('--use-cache', '-c',
+                        default=False,
+                        help='use caches for faster simulation')
+
+    parser.add_argument('--grammar', '-g',
+                        type=str,
+                        help='CFG rules')
     return parser
 
 
