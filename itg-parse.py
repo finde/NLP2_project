@@ -68,6 +68,12 @@ def main(args):
 
     for str_no, input_str in enumerate(args.input):
 
+        if args.line:
+            if int(str_no) < int(args.line) - 1:
+                continue
+            elif int(str_no) > int(args.line):
+                return True
+
         if args.use_cache:
             forest_file = "%s/grammars.%s.cp" % (args.use_cache, str(str_no))
 
@@ -105,7 +111,7 @@ def main(args):
         if args.best:
             p_score = 0
             if forest == 'NO PARSE FOUND':
-                sentence = 'NO PARSE FOUND'
+                sentence = input_str.replace("\n", "")
                 derivation = 'NO PARSE FOUND'
 
             else:
@@ -196,6 +202,9 @@ def argparser():
 
     parser.add_argument('--best', '-b',
                         action='store_true', default=False,
+                        help='return best order')
+
+    parser.add_argument('--line', '-l',
                         help='return best order')
 
     parser.add_argument('--use-cache', '-c',
