@@ -8,7 +8,7 @@ export SYM_ALIGN="${CDEC}/build/utils/atools"
 export EXTRACTOR="${CDEC}/build/extractor"
 export COMPOUND_SPLIT="${CDEC}/build/compound-split"
 export N=10
-export MAX_LENGTH=30
+export MAX_LENGTH=20
 
 if [ "$1" == "simple" ]
 then
