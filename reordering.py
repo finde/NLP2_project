@@ -37,6 +37,10 @@ perceptron = Perceptron(penalty=None, alpha=0.0001, fit_intercept=True, n_iter=1
                         n_jobs=1, random_state=0, class_weight=None, warm_start=False)
 
 
+def generate_splits(n, split, A, B):
+    return [(A[x * split:(x + 1) * split], B[x * split:(x + 1) * split]) for x in range(n)]
+
+
 # main procedure
 def main(args):
     sourceF = args.source_language
@@ -55,54 +59,55 @@ def main(args):
             src = toker.tokenize(src)
             srcSs.append(src)
             refs.append(refAlign)
-            perms.append(randomPermute(src, 1))
+            # get permutation from ITG
+            perms.append(randomPermute(src, 5))
 
-    split = len(srcSs) / 5
-    testSs = srcSs[4 * split:]
-    testPerms = perms[4 * split:]
-    testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
+    # train 75% - test 25%
+    ratio_train = .75
+    split_index = int(np.floor(len(srcSs) * ratio_train) + 1)
+
+    split = split_index / (args.njobs)
+
+    # last batch for testing
+    testSs = srcSs[split_index:]
+    testPerms = perms[args.njobs * split:]
+
+    # testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
     iters = 2  # until measure gives low error
     for i in range(iters):
-        p = Pool(4)
+        print '\n=== iteration %d ===' % (i + 1)
+        p = Pool(args.njobs)
         if i > 0:
             print 'searching best neighbors'
 
-            srcNBs = p.map(getBestNeighbor, [(srcSs[:split], perms[:split]),
-                                             (srcSs[split:2 * split], perms[split:2 * split]),
-                                             (srcSs[2 * split:3 * split], perms[2 * split:3 * split]),
-                                             (srcSs[3 * split:4 * split], perms[3 * split:4 * split])])
+            srcNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, srcSs, perms))
             srcSs = []
             for s in srcNBs:
                 srcSs.extend(s)
-                print '--', s
+                # print '--', s
 
-        p = Pool(4)
-        print 'building train vectors'
-        vecs = p.map(getFeatsMP, [(srcSs[:split], refs[:split]),
-                                  (srcSs[split:2 * split], refs[split:2 * split]),
-                                  (srcSs[2 * split:3 * split], refs[2 * split:3 * split]),
-                                  (srcSs[3 * split:4 * split], refs[3 * split:4 * split])])
+        p = Pool(args.njobs)
+        print 'building train vectors..'
+        vecs = p.map(getFeatsMP, generate_splits(args.njobs, split, srcSs, refs))
 
         for v in vecs:
             trainVecs.extend(v)
 
-        print 'start training'
+        print 'training model..'
         X, y = getVecs(trainVecs)
         global perceptron
         perceptron = perceptron.fit(X, y)
+        print '[ accuracy ] =', perceptron.score(X, y)
 
-    print 'start testing'
-    split = len(testSs)  # /4 to use 4 parrallel (while testing use only 1 sentence)
-    bestNBs = p.map(getBestNeighbor, [(testSs[:split], testPerms[:split]),
-                                      (testSs[split:2 * split], testPerms[split:2 * split]),
-                                      (testSs[2 * split:3 * split], testPerms[2 * split:3 * split]),
-                                      (testSs[3 * split:4 * split], testPerms[3 * split:4 * split])])
+    print '\n=== testing ==='
+    split = len(testSs) / args.njobs  # /4 to use 4 parrallel (while testing use only 1 sentence)
+    bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
     resSs = [bestNBs[i] for i in range(len(bestNBs))]
 
     for src, res in zip(testSs, resSs):
         print '----'
         print src, '\n', testPerms[0], '\n', resSs[0][0]
-        print '---'
+        print '----'
 
 
 def getBestNeighbor((srcSs, permus)):
@@ -130,8 +135,10 @@ def getBestNeighbor((srcSs, permus)):
                         if bta >= beta[i, k]:
                             beta[i, k] = bta
                             swap = [i, j, k]
-        print 'best swap', swap
-        nhbs.append(getSwap(srcS, swap))
+
+        after_swapped = getSwap(srcS, swap)
+        print 'best swap', swap, '\t', after_swapped
+        nhbs.append(after_swapped)
     return nhbs
 
 
@@ -162,10 +169,10 @@ def getSwap(src, swap):
     permS = []
     if sum(swap) is 0:
         return src
-    permS.extend(src[:i + 1])
-    permS.extend(src[j + 1:k + 1])
-    permS.extend(src[i + 1:j + 1])
-    permS.extend(src[k + 1:])
+    permS.extend(src[:i])
+    permS.extend(src[j:k])
+    permS.extend(src[i:j])
+    permS.extend(src[k:])
     return permS
 
 
@@ -365,6 +372,10 @@ def argparser():
     parser.add_argument('--alignments', '-a',
                         type=str,
                         help='alignment file path')
+
+    parser.add_argument('--njobs', '-j',
+                        type=int, default=1,
+                        help='number of workers')
 
     return parser
 

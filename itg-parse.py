@@ -79,28 +79,16 @@ def main(args):
 
             if os.path.isfile(forest_file):
                 # load cache
-<<<<<<< HEAD
                 forest_f = open(forest_file, 'r')
                 forest = cPickle.load(forest_f)
                 forest_f.close()
-=======
-                forest_file = open(forest_file, 'r')
-                forest = cPickle.load(forest_file)
-                forest_file.close()
->>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
             else:
                 forest = get_forest(input_str, wcfg)
 
                 # store cache
-<<<<<<< HEAD
                 forest_f = open(forest_file, 'w')
                 cPickle.dump(forest, forest_f)
                 forest_f.close()
-=======
-                forest_file = open(forest_file, 'w')
-                cPickle.dump(forest, forest_file)
-                forest_file.close()
->>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
 
             # store map
             map = open(map_file, "a")
@@ -145,14 +133,11 @@ def main(args):
                 out_f.write(tree)
                 out_f.close()
 
-<<<<<<< HEAD
                 forest_f = open(forest_file + '.perm', 'w')
                 for (words, p_score) in projection_score:
                     forest_f.write("%s\n" % ' '.join(words))
                 forest_f.close()
 
-=======
->>>>>>> d5ebffaf923b92583295862de609e9ef533d70d2
             print sentence + " ||| " + str(p_score)
             print tree
         else:
