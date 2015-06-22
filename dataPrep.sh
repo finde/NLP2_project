@@ -33,21 +33,13 @@ then
     cp data/train.de ${DATA_FOLDER}/train.de
 fi
 
-#./data_prep/merge_file.sh              # merge into en-de
-#./data_prep/filter_long_sentences.sh   # cut long sentence
-#./data_prep/compound_splitting.sh      # compound splitting
-#./data_prep/tokenize.sh                # tokenize / .ok
-#./data_prep/bidirectional_alignment.sh # alignment / gdfa
-#./data_prep/extract_training_data.sh   # plus unicode safe
-#./data_prep/grammar_extraction.sh      # extract grammar for parallel
-
+./data_prep/merge_file.sh              # merge into en-de
+./data_prep/filter_long_sentences.sh   # remove long sentences
+./data_prep/compound_splitting.sh      # compound splitting
+./data_prep/tokenize.sh                # tokenize / *.tok
+./data_prep/bidirectional_alignment.sh # alignment / gdfa
+./data_prep/extract_training_data.sh   # convert to unicode-safe
+./data_prep/grammar_extraction.sh      # extract grammar for parallel
 ./data_prep/merge_grammars.sh
-#./data_prep/extract_best_itg.sh
 
-#./data_prep/pos_tag.sh                 # .tagged
-
-#echo "=== creating short sample set ==="
-#head -n 30 ${DATA_FOLDER}/training.tagged.de > ${DATA_FOLDER}/training.tagged.de.10
-#head -n 30 ${DATA_FOLDER}/training.tagged.en > ${DATA_FOLDER}/training.tagged.en.10
-#head -n 30 ${DATA_FOLDER}/training.en-de.gdfa > ${DATA_FOLDER}/training.en-de.gdfa.10
-
+./data_prep/pos_tag.sh                 # *.tagged
