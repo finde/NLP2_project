@@ -104,13 +104,15 @@ def main(args):
                 perms.append(randomPermute(src, 5))
 
     # train 75% - test 25%
-    ratio_train = .75
+    ratio_train = .5
     split_index = int(np.floor(len(srcSs) * ratio_train))
 
     split = split_index / args.njobs
 
     # last batch for testing
     if ratio_train < 1:
+        devSs = srcSs[:split_index]
+        devPerms = srcSs[:split_index]
         testSs = srcSs[split_index:]
         testPerms = perms[split_index:]
 
@@ -144,8 +146,24 @@ def main(args):
         global perceptron
         perceptron = perceptron.fit(X, y)
 
-    print '\n=== testing ==='
+    print '\n=== create dev n test ==='
 
+    # dev
+    args.njobs = 1
+    split = len(devSs) / args.njobs
+    p = Pool(args.njobs)
+    bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, devSs, devPerms))
+
+    resSs = []
+    for s in bestNBs:
+        resSs.extend(s)
+
+    with open(sourceF + '.dev.src', 'w') as srcF, open(sourceF + '.dev.res', 'w') as resF:
+        for src, res in zip(testSs[:len(resSs)], resSs):
+            srcF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], src)) + '\n')
+            resF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], res)) + '\n')
+
+    # test
     args.njobs = 1
     split = len(testSs) / args.njobs
     p = Pool(args.njobs)
@@ -155,7 +173,7 @@ def main(args):
     for s in bestNBs:
         resSs.extend(s)
 
-    with open(sourceF + '.src', 'w') as srcF, open(sourceF + '.res', 'w') as resF:
+    with open(sourceF + '.test.src', 'w') as srcF, open(sourceF + '.test.res', 'w') as resF:
         for src, res in zip(testSs[:len(resSs)], resSs):
             srcF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], src)) + '\n')
             resF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], res)) + '\n')
