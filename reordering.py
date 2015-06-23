@@ -82,7 +82,7 @@ def main(args):
 
     toker = tokenize.RegexpTokenizer('\w+|\S+')
     global features
-    features = setFeatures(sourceF)
+    features = setFeatures(sourceF)[:200000] # up to 200000 features
     print 'nr.of feats: ', len(features)
     print 'permutation:', 'ITG' if args.itg else 'Random'
     trainVecs = []
