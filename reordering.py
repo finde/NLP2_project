@@ -68,6 +68,9 @@ def get_itg_permutations(src, tree, max_perms):
 
         return perms
 
+    else:
+        return [[0, 0, 0]]
+
 
 # main procedure
 def main(args):
@@ -85,7 +88,7 @@ def main(args):
     trainVecs = []
     srcSs = []
     refs = []
-    perms = [[0, 0, 0]]
+    perms = []
     with open(sourceF) as srcF, open(aligns) as srcRef, open(sourceF_no_tags) as srcF_nt:
         for str_no, (_src, refAlign, sentence) in enumerate(izip(srcF, srcRef, srcF_nt)):
             src = toker.tokenize(_src)
@@ -101,23 +104,28 @@ def main(args):
                 perms.append(randomPermute(src, 5))
 
     # train 75% - test 25%
-    ratio_train = 100
-    split_index = int(np.floor(len(srcSs) * ratio_train) + 1)
+    ratio_train = 1
+    split_index = int(np.floor(len(srcSs) * ratio_train))
 
-    split = split_index / (args.njobs)
+    split = split_index / args.njobs
 
     # last batch for testing
-    testSs = srcSs[split_index:]
-    testPerms = perms[args.njobs * split:]
+    # testSs = srcSs[split_index+1:]
+    # testPerms = perms[args.njobs * split:]
 
     # testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
     iters = 5  # until measure gives low error
     for i in range(iters):
         print '\n=== iteration %d ===' % (i + 1)
+
+        # a = generate_splits(args.njobs, split, srcSs, perms)
+        # print a
+
         p = Pool(args.njobs)
         if i > 0:
             print 'searching best neighbors'
 
+            print args.njobs, split, len(srcSs), len(perms)
             srcNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, srcSs, perms))
             srcSs = []
             for s in srcNBs:
@@ -137,15 +145,15 @@ def main(args):
         perceptron = perceptron.fit(X, y)
         print '[ accuracy ] =', perceptron.score(X, y)
 
-    print '\n=== testing ==='
-    split = len(testSs) / args.njobs  # /4 to use 4 parrallel (while testing use only 1 sentence)
-    bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
-    resSs = [bestNBs[i] for i in range(len(bestNBs))]
-
-    for src, res in zip(testSs, resSs):
-        print '----'
-        print src, '\n', testPerms[0], '\n', resSs[0][0]
-        print '----'
+        # print '\n=== testing ==='
+        # split = len(testSs) / args.njobs  # /4 to use 4 parrallel (while testing use only 1 sentence)
+        # bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
+        # resSs = [bestNBs[i] for i in range(len(bestNBs))]
+        #
+        # for src, res in zip(testSs, resSs):
+        # print '----'
+        #     print src, '\n', testPerms[0], '\n', resSs[0][0]
+        #     print '----'
 
 
 def getBestNeighbor((srcSs, permus)):
