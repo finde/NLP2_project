@@ -114,7 +114,7 @@ def main(args):
     # testPerms = perms[args.njobs * split:]
 
     # testPerms.append([6, 7, 8])  # reasonable permutation, should (mostly) be chosen over random (for testing purposes)
-    iters = 5  # until measure gives low error
+    iters = 1  # until measure gives low error
     for i in range(iters):
         print '\n=== iteration %d ===' % (i + 1)
 
