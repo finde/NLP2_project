@@ -146,10 +146,8 @@ def main(args):
 
     print '\n=== testing ==='
 
-    if len(testSs) < args.njobs:
-        args.njobs = 1
-
-    split = len(testSs) / args.njobs  # /4 to use 4 parallel (while testing use only 1 sentence)
+    args.njobs = 1
+    split = len(testSs) / args.njobs
     p = Pool(args.njobs)
     bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
 
@@ -159,8 +157,8 @@ def main(args):
 
     with open(sourceF + '.src', 'w') as srcF, open(sourceF + '.res', 'w') as resF:
         for src, res in zip(testSs[:len(resSs)], resSs):
-            srcF.write(' '.join(src) + '\n')
-            resF.write(' '.join(res) + '\n')
+            srcF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], src)) + '\n')
+            resF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], res)) + '\n')
 
 
 def getBestNeighbor((srcSs, permus)):
