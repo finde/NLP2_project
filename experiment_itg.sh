@@ -11,6 +11,7 @@ echo "experiment with language ${LANG} on ${N} lines"
 
 echo "=== creating short sample set ==="
 head -n ${N} data/training.tok.${LANG} > data/training.tok.${LANG}.${N}
+head -n ${N} data/training.en-de.gdfa > data/training.en-de.gdfa.${N}
 
 echo "=== reordering ==="
 python reordering.py \
