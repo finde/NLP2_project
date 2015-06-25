@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 # download and unzip stanford basic POS tagger
-cd stanford-postagger-2015-04-20/
-java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/english-bidirectional-distsim.tagger -textFile ../${DATA_FOLDER}/training.tok.en > ../${DATA_FOLDER}/training.tagged.en
-java -mx300m -classpath stanford-postagger.jar edu.stanford.nlp.tagger.maxent.MaxentTagger -model models/german-fast.tagger -textFile ../${DATA_FOLDER}/training.tok.de > ../${DATA_FOLDER}/training.tagged.de
+python ./data_prep/pos_tag.py -i 'data/training.tok.de' -o 'data/training.tagged.clean.de' \
+                                -pi 'data/training.tok.en' -po 'data/training.tok.clean.en' \
+                                -gi 'data/training.en-de.gdfa' -go 'data/training.en-de.clean.gdfa'

@@ -24,7 +24,7 @@ cat ${f} \
     | sed -e 's/\[X,1\]/\[X\]/g' \
     | sed -e 's/\[X,2\]/\[X\]/g' \
     | sort -t '-' \
-    | python ./merge_count.py \
+    | python ./data_prep/merge_count.py \
     >> ${DATA_FOLDER}/itg.en
 
 rm -f ${DATA_FOLDER}/itg.de 2> /dev/null
@@ -48,7 +48,7 @@ cat ${f} \
     | sed -e 's/\[X,1\]/\[X\]/g' \
     | sed -e 's/\[X,2\]/\[X\]/g' \
     | sort -t '-' \
-    | python ./merge_count.py \
+    | python ./data_prep/merge_count.py \
     >> ${DATA_FOLDER}/itg.de
 
 echo "          done"

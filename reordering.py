@@ -1,16 +1,18 @@
-import numpy as np
-from random import shuffle
 from itertools import izip
 from operator import itemgetter
-from nltk import tokenize
 from collections import deque
-from sklearn.linear_model import Perceptron
-from scipy.sparse import csr_matrix
 from multiprocessing import Pool
 from random import randint
 import argparse
 
-from itg_parse import main as itg_parser, is_nonterminal, is_terminal
+import numpy as np
+from nltk import tokenize
+from sklearn.linear_model import Perceptron
+from scipy.sparse import csr_matrix
+
+from itg_parse import main as itg_parser, is_nonterminal
+
+
 
 # feature templates as defined in Tromble
 templateFts = ['tlm1', 'wl', 'tl', 'tlp1', 'tb', 'trm1', 'wr', 'tr', 'trp1']
