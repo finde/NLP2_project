@@ -15,7 +15,6 @@ head -n ${N} data/training.en-de.gdfa > data/training.en-de.gdfa.${N}
 
 echo "=== reordering ==="
 python reordering.py \
-    -t data/training.tok.${LANG}.${N} \
     -s data/training.tok.${LANG}.${N} \
     -a data/training.en-de.gdfa.${N} \
     -g data/itg.${LANG} \

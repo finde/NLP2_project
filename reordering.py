@@ -77,7 +77,6 @@ def get_itg_permutations(src, tree, max_perms):
 # main procedure
 def main(args):
     sourceF = args.source_language
-    sourceF_no_tags = args.source_language_without_tags
     aligns = args.alignments
 
     # todo: print settings
@@ -91,8 +90,10 @@ def main(args):
     srcSs = []
     refs = []
     perms = []
-    with open(sourceF) as srcF, open(aligns) as srcRef, open(sourceF_no_tags) as srcF_nt:
-        for str_no, (_src, refAlign, sentence) in enumerate(izip(srcF, srcRef, srcF_nt)):
+    with open(sourceF) as srcF, open(aligns) as srcRef:
+        for str_no, (_src, refAlign) in enumerate(izip(srcF, srcRef)):
+            sentence = reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], _src)) + '\n'
+
             src = toker.tokenize(_src)
             srcSs.append(src)
             refs.append(refAlign)
@@ -443,10 +444,6 @@ def argparser():
     parser.add_argument('--source-language', '-s',
                         type=str,
                         help='source language file path')
-
-    parser.add_argument('--source-language-without-tags', '-t',
-                        type=str,
-                        help='source language without tags file path')
 
     parser.add_argument('--alignments', '-a',
                         type=str,
