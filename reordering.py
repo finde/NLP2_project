@@ -126,22 +126,24 @@ def main(args):
         # a = generate_splits(args.njobs, split, srcSs, perms)
         # print a
 
-        p = Pool(args.njobs)
+        # p = Pool(args.njobs)
         if i > 0:
             print 'searching best neighbors'
 
-            srcNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, srcSs, perms))
-            srcSs = []
-            for s in srcNBs:
-                srcSs.extend(s)
+            srcSs = getBestNeighbor((srcSs, perms))
+            # srcNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, srcSs, perms))
+            # srcSs = []
+            # for s in srcNBs:
+            #     srcSs.extend(s)
                 # print '--', s
 
-        p = Pool(args.njobs)
+        # p = Pool(args.njobs)
         print 'building train vectors..'
-        vecs = p.map(getFeatsMP, generate_splits(args.njobs, split, srcSs, refs))
+        # vecs = p.map(getFeatsMP, generate_splits(args.njobs, split, srcSs, refs))
 
-        for v in vecs:
-            trainVecs.extend(v)
+        # for v in vecs:
+        #     trainVecs.extend(v)
+        trainVecs = getFeatsMP((srcSs, refs))
 
         print 'training model..'
         X, y = getVecs(trainVecs)
@@ -151,14 +153,15 @@ def main(args):
     print '\n=== create dev n test ==='
 
     # dev
-    args.njobs = 1
-    split = len(devSs) / args.njobs
-    p = Pool(args.njobs)
-    bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, devSs, devPerms))
+    # args.njobs = 1
+    # split = len(devSs) / args.njobs
+    # p = Pool(args.njobs)
+    # bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, devSs, devPerms))
 
-    resSs = []
-    for s in bestNBs:
-        resSs.extend(s)
+    # resSs = []
+    # for s in bestNBs:
+    #     resSs.extend(s)
+    resSs = getBestNeighbor((devSs, devPerms))
 
     with open(sourceF + '.dev.src', 'w') as srcF, open(sourceF + '.dev.res', 'w') as resF:
         for src, res in zip(testSs[:len(resSs)], resSs):
@@ -166,14 +169,15 @@ def main(args):
             resF.write(reduce(lambda x, y: x + ' ' + y, map(lambda x: x.split('_')[0], res)) + '\n')
 
     # test
-    args.njobs = 1
-    split = len(testSs) / args.njobs
-    p = Pool(args.njobs)
-    bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
-
-    resSs = []
-    for s in bestNBs:
-        resSs.extend(s)
+    # args.njobs = 1
+    # split = len(testSs) / args.njobs
+    # p = Pool(args.njobs)
+    # bestNBs = p.map(getBestNeighbor, generate_splits(args.njobs, split, testSs, testPerms))
+    #
+    # resSs = []
+    # for s in bestNBs:
+    #     resSs.extend(s)
+    resSs = getBestNeighbor((testSs, testPerms))
 
     with open(sourceF + '.test.src', 'w') as srcF, open(sourceF + '.test.res', 'w') as resF:
         for src, res in zip(testSs[:len(resSs)], resSs):
